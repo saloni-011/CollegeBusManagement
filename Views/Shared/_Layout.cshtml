@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - College Bus Route &amp; Pass Management</title>
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CollegeBusManagement.styles.css" asp-append-version="true" />
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        }
+        main {
+            flex: 1;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .nav-link {
+            font-weight: 500;
+            padding: 0.5rem 0.85rem !important;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #fff !important;
+        }
+        .nav-link.active {
+            color: #fff !important;
+            background-color: rgba(13, 110, 253, 0.25);
+        }
+        .admin-link {
+            border: 1px solid rgba(255, 193, 7, 0.35);
+            color: #ffc107 !important;
+        }
+        .admin-link:hover {
+            background-color: #ffc107 !important;
+            color: #000 !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm py-2">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center text-white" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-bus-front-fill text-warning me-2 fs-3"></i>
+                    <span>Campus<span class="text-primary">Bus</span></span>
+                </a>
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house-door me-1"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" asp-controller="Route" asp-action="Index">
+                                <i class="bi bi-signpost-split me-1"></i> Bus Routes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" asp-controller="BusPass" asp-action="Apply">
+                                <i class="bi bi-ticket-perforated me-1"></i> Apply for Pass
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" asp-controller="BusPass" asp-action="Status">
+                                <i class="bi bi-search me-1"></i> Check Pass Status
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link admin-link px-3" asp-controller="BusPass" asp-action="AdminIndex">
+                                <i class="bi bi-shield-lock me-1"></i> Admin Portal
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container my-4">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="bg-dark text-white-50 border-top border-secondary border-opacity-25 py-4 mt-auto">
+        <div class="container">
+            <div class="row align-items-center g-3">
+                <div class="col-md-6 text-center text-md-start">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start">
+                        <i class="bi bi-bus-front-fill text-warning me-2"></i>
+                        <span class="text-white fw-bold">College Bus Route &amp; Pass Management System</span>
+                    </div>
+                    <small class="text-white-50">Safe, punctual, and convenient campus commute for students and staff.</small>
+                </div>
+                <div class="col-md-6 text-center text-md-end small">
+                    <div>&copy; 2026 Campus Transit Authority &bull; Built with ASP.NET Core 8 MVC</div>
+                    <div class="mt-1">
+                        <a asp-controller="Route" asp-action="Index" class="text-white-50 text-decoration-none me-3 hover-white">All Routes</a>
+                        <a asp-controller="BusPass" asp-action="Apply" class="text-white-50 text-decoration-none me-3">Apply Pass</a>
+                        <a asp-controller="BusPass" asp-action="Status" class="text-white-50 text-decoration-none me-3">Track Status</a>
+                        <a asp-controller="BusPass" asp-action="AdminIndex" class="text-warning text-decoration-none">Admin</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

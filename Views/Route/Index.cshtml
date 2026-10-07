@@ -1,0 +1,122 @@
+@model IEnumerable<CollegeBusManagement.Models.BusRoute>
+
+@{
+    ViewData["Title"] = "Bus Routes & Timings";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-signpost-split text-primary me-2"></i>Bus Routes & Schedules</h2>
+        <p class="text-muted mb-0">Explore college bus transit lines, stops, and real-time seat availability.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary btn-lg shadow-sm">
+        <i class="bi bi-plus-circle me-1"></i> Add New Route
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col" class="ps-4">Route Name</th>
+                        <th scope="col">Journey Path</th>
+                        <th scope="col">Monthly Fee</th>
+                        <th scope="col">Seats Status</th>
+                        <th scope="col">Intermediate Stops</th>
+                        <th scope="col" class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-bus-front display-4 d-block mb-3 text-secondary"></i>
+                                <h5>No Bus Routes Found</h5>
+                                <p>Get started by creating your first college bus route.</p>
+                                <a asp-action="Create" class="btn btn-outline-primary btn-sm">Create Route</a>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var route in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark">@route.RouteName</div>
+                                    <small class="text-muted">Route #@route.Id</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-light text-dark border me-1"><i class="bi bi-geo-alt-fill text-success"></i> @route.StartPoint</span>
+                                        <i class="bi bi-arrow-right text-muted mx-1"></i>
+                                        <span class="badge bg-light text-dark border"><i class="bi bi-flag-fill text-danger"></i> @route.EndPoint</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-primary fs-6">₹@route.MonthlyFee.ToString("N2")</span>
+                                    <span class="text-muted small">/mo</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="badge @(route.AvailableSeats > 5 ? "bg-success" : route.AvailableSeats > 0 ? "bg-warning text-dark" : "bg-danger")">
+                                            @route.AvailableSeats / @route.TotalSeats Available
+                                        </span>
+                                    </div>
+                                    <div class="progress mt-1" style="height: 5px; width: 120px;">
+                                        @{
+                                            var pct = route.TotalSeats > 0 ? ((route.TotalSeats - route.AvailableSeats) * 100 / route.TotalSeats) : 0;
+                                        }
+                                        <div class="progress-bar @(route.AvailableSeats == 0 ? "bg-danger" : "bg-primary")" role="progressbar" style="width: @pct%;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (route.BusStops != null && route.BusStops.Any())
+                                    {
+                                        <div class="d-flex flex-wrap gap-1" style="max-width: 320px;">
+                                            @foreach (var stop in route.BusStops.Take(3))
+                                            {
+                                                <span class="badge bg-secondary-subtle text-secondary-emphasis border">
+                                                    @stop.StopName <small class="text-muted">(@stop.PickupTime)</small>
+                                                </span>
+                                            }
+                                            @if (route.BusStops.Count > 3)
+                                            {
+                                                <span class="badge bg-light text-muted border">+@(route.BusStops.Count - 3) more</span>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small fst-italic">No stops added</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@route.Id" class="btn btn-sm btn-outline-primary" title="View Stops & Details">
+                                            <i class="bi bi-eye"></i> Details
+                                        </a>
+                                        <a asp-controller="BusPass" asp-action="Apply" class="btn btn-sm btn-outline-success" title="Apply for this Route">
+                                            <i class="bi bi-ticket-perforated"></i> Apply
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+@model CollegeBusManagement.Models.BusStop
+
+@{
+    var route = ViewBag.Route as CollegeBusManagement.Models.BusRoute;
+    ViewData["Title"] = $"Add Stop - {route?.RouteName ?? "Route"}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-dark text-white p-4 rounded-top-4">
+                <h4 class="mb-1 text-white">Add Intermediate Bus Stop</h4>
+                <p class="mb-0 text-white-50 small">Route: @(route?.RouteName ?? $"Route #{Model.BusRouteId}")</p>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <form asp-action="AddStop" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="BusRouteId" />
+
+                    <div class="mb-4">
+                        <label asp-for="StopName" class="form-label fw-semibold">Stop Name / Landmark <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-geo-alt-fill text-primary"></i></span>
+                            <input asp-for="StopName" class="form-control" placeholder="e.g. Indira Circle" />
+                        </div>
+                        <span asp-validation-for="StopName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="PickupTime" class="form-label fw-semibold">Morning Pickup Time <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-clock-fill text-primary"></i></span>
+                            <input asp-for="PickupTime" class="form-control" placeholder="e.g. 07:30 AM" />
+                        </div>
+                        <span asp-validation-for="PickupTime" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a asp-action="Details" asp-route-id="@Model.BusRouteId" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                            <i class="bi bi-plus-circle me-1"></i> Add Stop
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

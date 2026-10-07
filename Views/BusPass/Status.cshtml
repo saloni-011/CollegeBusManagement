@@ -1,0 +1,288 @@
+@model CollegeBusManagement.Models.BusPass
+
+@{
+    ViewData["Title"] = "Bus Pass Status & Digital Pass";
+    string? searchedRoll = ViewBag.SearchRollNumber as string;
+    string? notFound = ViewBag.NotFoundMessage as string;
+}
+
+<style>
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+        #printableBusPass, #printableBusPass * {
+            visibility: visible;
+        }
+        #printableBusPass {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            margin: 0;
+            box-shadow: none !important;
+            border: 2px solid #000 !important;
+        }
+        .no-print {
+            display: none !important;
+        }
+    }
+
+    .pass-card {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 40%, #052c65 100%);
+        color: white;
+        border-radius: 1.25rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(13, 110, 253, 0.25);
+    }
+
+    .pass-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .qr-container {
+        background: #ffffff;
+        padding: 12px;
+        border-radius: 12px;
+        display: inline-block;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+</style>
+
+<div class="row justify-content-center mb-4 no-print">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle d-inline-block mb-3">
+                        <i class="bi bi-search fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold">Track Bus Pass Application</h3>
+                    <p class="text-muted">Enter your College Roll Number to check your approval status or download your digital pass.</p>
+                </div>
+
+                <form asp-action="SearchStatus" method="post" class="mb-3">
+                    @Html.AntiForgeryToken()
+                    <div class="input-group input-group-lg shadow-sm">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-card-heading text-primary"></i></span>
+                        <input type="text" name="rollNumber" class="form-control border-start-0" placeholder="Enter Roll Number (e.g. 23CS101)" value="@searchedRoll" required style="text-transform: uppercase;" />
+                        <button class="btn btn-primary px-4" type="submit">
+                            <i class="bi bi-arrow-right-circle me-1"></i> Check Status
+                        </button>
+                    </div>
+                </form>
+
+                @if (!string.IsNullOrEmpty(notFound))
+                {
+                    <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mt-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+                        <div>
+                            <strong>Application Not Found:</strong> @notFound
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model != null)
+{
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            @if (Model.Status == "Approved")
+            {
+                <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6">
+                        <i class="bi bi-check-circle-fill me-1"></i> Pass Approved & Active
+                    </span>
+                    <button class="btn btn-outline-dark" onclick="window.print();">
+                        <i class="bi bi-printer-fill me-1"></i> Print Digital Pass
+                    </button>
+                </div>
+
+                <!-- Printable Digital Pass Card Badge -->
+                <div id="printableBusPass" class="card pass-card border-0 mb-4">
+                    <div class="card-body p-4 p-md-5">
+                        <!-- Header with College Branding -->
+                        <div class="d-flex justify-content-between align-items-start border-bottom border-white border-opacity-25 pb-3 mb-4">
+                            <div>
+                                <div class="text-uppercase small tracking-wide text-warning fw-bold">Official Campus Transit</div>
+                                <h3 class="fw-bold mb-0 text-white">COLLEGE BUS PASS</h3>
+                                <small class="text-white-50">Academic Session 2026 - 2027</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-success text-white px-3 py-2 fs-6 shadow-sm">
+                                    <i class="bi bi-patch-check-fill me-1"></i> VERIFIED PASS
+                                </span>
+                                <div class="text-white-50 small mt-1">Pass #BP-@Model.Id.ToString("D5")</div>
+                            </div>
+                        </div>
+
+                        <!-- Card Body: Student & Route Info -->
+                        <div class="row g-4 align-items-center">
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="text-white-50 small text-uppercase">Student Name</div>
+                                        <div class="fs-4 fw-bold text-white">@Model.StudentName</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-white-50 small text-uppercase">Roll Number</div>
+                                        <div class="fs-5 fw-bold text-warning">@Model.RollNumber</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-white-50 small text-uppercase">Contact</div>
+                                        <div class="fw-semibold text-white">@Model.ContactNumber</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="text-white-50 small text-uppercase">Assigned Route</div>
+                                        <div class="fw-bold text-white">@(Model.BusRoute?.RouteName ?? "College Transit Route")</div>
+                                        <small class="text-white-50">
+                                            <i class="bi bi-geo-alt-fill text-warning me-1"></i>@(Model.BusRoute?.StartPoint ?? "Boarding") 
+                                            &rarr; <i class="bi bi-flag-fill text-danger me-1"></i>@(Model.BusRoute?.EndPoint ?? "Campus")
+                                        </small>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-white-50 small text-uppercase">Issue Date</div>
+                                        <div class="text-white">@Model.RequestDate.ToString("dd MMM yyyy")</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-white-50 small text-uppercase">Valid Thru</div>
+                                        <div class="text-white fw-bold">@(Model.PassExpiryDate?.ToString("dd MMM yyyy") ?? "End of Semester")</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mock QR Code Container -->
+                            <div class="col-md-4 text-center">
+                                <div class="qr-container mx-auto">
+                                    <!-- Scalable Mock QR Vector -->
+                                    <svg width="130" height="130" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <!-- Corners -->
+                                        <rect x="5" y="5" width="26" height="26" rx="4" fill="#111827"/>
+                                        <rect x="9" y="9" width="18" height="18" fill="white"/>
+                                        <rect x="13" y="13" width="10" height="10" fill="#111827"/>
+
+                                        <rect x="69" y="5" width="26" height="26" rx="4" fill="#111827"/>
+                                        <rect x="73" y="9" width="18" height="18" fill="white"/>
+                                        <rect x="77" y="13" width="10" height="10" fill="#111827"/>
+
+                                        <rect x="5" y="69" width="26" height="26" rx="4" fill="#111827"/>
+                                        <rect x="9" y="73" width="18" height="18" fill="white"/>
+                                        <rect x="13" y="77" width="10" height="10" fill="#111827"/>
+
+                                        <!-- Mock Data Matrix Bits -->
+                                        <rect x="36" y="8" width="6" height="6" fill="#111827"/>
+                                        <rect x="46" y="8" width="6" height="6" fill="#111827"/>
+                                        <rect x="56" y="16" width="6" height="6" fill="#111827"/>
+                                        <rect x="36" y="24" width="6" height="6" fill="#111827"/>
+                                        <rect x="56" y="24" width="6" height="6" fill="#111827"/>
+
+                                        <rect x="8" y="38" width="6" height="6" fill="#111827"/>
+                                        <rect x="20" y="38" width="6" height="6" fill="#111827"/>
+                                        <rect x="38" y="38" width="8" height="8" fill="#0d6efd"/>
+                                        <rect x="52" y="38" width="6" height="6" fill="#111827"/>
+                                        <rect x="68" y="38" width="6" height="6" fill="#111827"/>
+                                        <rect x="84" y="38" width="6" height="6" fill="#111827"/>
+
+                                        <rect x="8" y="50" width="6" height="6" fill="#111827"/>
+                                        <rect x="24" y="50" width="6" height="6" fill="#111827"/>
+                                        <rect x="38" y="52" width="6" height="6" fill="#111827"/>
+                                        <rect x="52" y="50" width="8" height="8" fill="#0d6efd"/>
+                                        <rect x="70" y="50" width="6" height="6" fill="#111827"/>
+                                        <rect x="84" y="54" width="6" height="6" fill="#111827"/>
+
+                                        <rect x="38" y="68" width="6" height="6" fill="#111827"/>
+                                        <rect x="50" y="68" width="6" height="6" fill="#111827"/>
+                                        <rect x="64" y="68" width="6" height="6" fill="#111827"/>
+                                        <rect x="80" y="68" width="6" height="6" fill="#111827"/>
+
+                                        <rect x="38" y="80" width="6" height="6" fill="#111827"/>
+                                        <rect x="52" y="80" width="6" height="6" fill="#111827"/>
+                                        <rect x="68" y="80" width="6" height="6" fill="#111827"/>
+                                        <rect x="84" y="80" width="6" height="6" fill="#111827"/>
+                                    </svg>
+                                    <div class="text-dark small fw-bold mt-1" style="font-size: 0.65rem;">SCAN FOR BOARDING</div>
+                                </div>
+                                <div class="text-white-50 small mt-2">Keep printed card or show on phone</div>
+                            </div>
+                        </div>
+
+                        <!-- Card Footer -->
+                        <div class="border-top border-white border-opacity-25 pt-3 mt-4 d-flex justify-content-between align-items-center text-white-50 small">
+                            <span><i class="bi bi-shield-check me-1"></i> Authorized by Transport Authority</span>
+                            <span>Non-transferable &bull; Valid with Student ID</span>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (Model.Status == "Pending")
+            {
+                <div class="card border-0 shadow-sm rounded-4 border-start border-warning border-5">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-warning bg-opacity-25 text-warning p-3 rounded-circle me-3">
+                                <i class="bi bi-hourglass-split fs-2"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-1">Application Under Review</h4>
+                                <span class="badge bg-warning text-dark px-3 py-1">Status: Pending Verification</span>
+                            </div>
+                        </div>
+                        <p class="text-muted">
+                            Hello <strong>@Model.StudentName</strong>, your bus pass application for Roll Number <strong>@Model.RollNumber</strong> was submitted on <strong>@Model.RequestDate.ToString("dd MMM yyyy, hh:mm tt")</strong> and is currently being processed by the administration.
+                        </p>
+                        <div class="bg-light p-3 rounded-3 mb-3">
+                            <div class="row g-2 small">
+                                <div class="col-sm-6"><strong>Requested Route:</strong> @(Model.BusRoute?.RouteName ?? "Not assigned")</div>
+                                <div class="col-sm-6"><strong>Monthly Fare:</strong> ₹@(Model.BusRoute?.MonthlyFee.ToString("N2") ?? "0.00")</div>
+                                <div class="col-sm-6"><strong>Registered Email:</strong> @Model.Email</div>
+                                <div class="col-sm-6"><strong>Phone:</strong> @Model.ContactNumber</div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info border-0 mb-0 small">
+                            <i class="bi bi-info-circle-fill me-1"></i> Verification generally takes 12–24 business hours. Please check back later.
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card border-0 shadow-sm rounded-4 border-start border-danger border-5">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-danger bg-opacity-25 text-danger p-3 rounded-circle me-3">
+                                <i class="bi bi-x-circle-fill fs-2"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-1 text-danger">Application Rejected</h4>
+                                <span class="badge bg-danger px-3 py-1">Status: Rejected</span>
+                            </div>
+                        </div>
+                        <p class="text-muted">
+                            Dear <strong>@Model.StudentName</strong>, your bus pass application for Roll Number <strong>@Model.RollNumber</strong> was not approved by the transport administration. This could be due to seat unavailability or mismatched student credentials.
+                        </p>
+                        <div class="d-flex gap-2">
+                            <a asp-action="Apply" class="btn btn-primary">
+                                <i class="bi bi-arrow-repeat me-1"></i> Submit New Application
+                            </a>
+                            <a asp-controller="Route" asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-bus-front me-1"></i> View Available Routes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

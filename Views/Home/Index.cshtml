@@ -1,0 +1,143 @@
+@{
+    ViewData["Title"] = "College Bus Route & Pass Portal";
+}
+
+<!-- Hero Section -->
+<div class="card border-0 rounded-4 shadow-sm overflow-hidden mb-5" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+    <div class="card-body p-4 p-md-5 text-white">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-semibold mb-3">
+                    <i class="bi bi-stars me-1"></i> Academic Year 2026-27 Transit System
+                </span>
+                <h1 class="display-4 fw-bold text-white mb-3">
+                    College Bus Route &amp; Pass Management
+                </h1>
+                <p class="lead text-white-50 mb-4" style="max-width: 650px;">
+                    Fast, secure, and automated student transportation management. Browse designated campus routes, check real-time seat availability, submit pass applications, and get your digital QR pass instantly.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a asp-controller="BusPass" asp-action="Apply" class="btn btn-primary btn-lg px-4 shadow">
+                        <i class="bi bi-ticket-perforated-fill me-2"></i> Apply for Bus Pass
+                    </a>
+                    <a asp-controller="BusPass" asp-action="Status" class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-search me-2"></i> Check Pass Status
+                    </a>
+                    <a asp-controller="Route" asp-action="Index" class="btn btn-link text-white text-decoration-none px-3 d-flex align-items-center">
+                        <i class="bi bi-signpost-2 me-1"></i> View All Routes <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center d-none d-lg-block">
+                <div class="p-4 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-10 shadow">
+                    <i class="bi bi-bus-front display-1 text-warning d-block mb-3"></i>
+                    <h5 class="fw-bold text-white mb-1">Campus Transit Fleet</h5>
+                    <p class="text-white-50 small mb-0">Safe &bull; Monitored &bull; Connected</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Features & Benefits -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
+            <div class="card-body">
+                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-4 d-inline-block mb-3">
+                    <i class="bi bi-pin-map-fill fs-3"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Optimized Bus Routes</h5>
+                <p class="text-muted small mb-3">
+                    Well-planned pickup points across major junctions including Kalawad Road, 150 Feet Ring Road, and University Road.
+                </p>
+                <a asp-controller="Route" asp-action="Index" class="text-primary text-decoration-none fw-semibold small">
+                    Browse Routes &amp; Stops &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
+            <div class="card-body">
+                <div class="bg-success bg-opacity-10 text-success p-3 rounded-4 d-inline-block mb-3">
+                    <i class="bi bi-qr-code-scan fs-3"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Digital QR Bus Pass</h5>
+                <p class="text-muted small mb-3">
+                    Instant access to your verified digital pass with embedded QR code. Print or display on your mobile when boarding.
+                </p>
+                <a asp-controller="BusPass" asp-action="Status" class="text-success text-decoration-none fw-semibold small">
+                    Check Your Pass Status &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
+            <div class="card-body">
+                <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-4 d-inline-block mb-3">
+                    <i class="bi bi-people-fill fs-3"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Live Seat Availability</h5>
+                <p class="text-muted small mb-3">
+                    Guaranteed seating capacity tracking. Available seats automatically update upon administrative approval.
+                </p>
+                <a asp-controller="BusPass" asp-action="Apply" class="text-warning text-decoration-none fw-semibold small">
+                    Reserve Your Seat Now &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-5">
+    <div class="text-center mb-5">
+        <h3 class="fw-bold">How to Get Your College Bus Pass</h3>
+        <p class="text-muted">Simple 4-step process to secure your transit seat for the semester.</p>
+    </div>
+    <div class="row g-4 text-center">
+        <div class="col-md-3">
+            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3 text-primary fw-bold fs-4 border border-2 border-primary" style="width: 60px; height: 60px;">
+                1
+            </div>
+            <h6 class="fw-bold mb-1">Choose Route</h6>
+            <p class="text-muted small">View nearby transit stops, timings, and fare on our routes directory.</p>
+        </div>
+        <div class="col-md-3">
+            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3 text-primary fw-bold fs-4 border border-2 border-primary" style="width: 60px; height: 60px;">
+                2
+            </div>
+            <h6 class="fw-bold mb-1">Submit Application</h6>
+            <p class="text-muted small">Enter your Student Name, College Roll Number, and select your route.</p>
+        </div>
+        <div class="col-md-3">
+            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3 text-primary fw-bold fs-4 border border-2 border-primary" style="width: 60px; height: 60px;">
+                3
+            </div>
+            <h6 class="fw-bold mb-1">Admin Approval</h6>
+            <p class="text-muted small">Transport admin verifies student details and allocates available bus seats.</p>
+        </div>
+        <div class="col-md-3">
+            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3 text-success fw-bold fs-4 border border-2 border-success" style="width: 60px; height: 60px;">
+                4
+            </div>
+            <h6 class="fw-bold mb-1">Download Pass</h6>
+            <p class="text-muted small">Search by Roll Number to download and print your official Digital QR Pass.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Callout Banner -->
+<div class="card border-0 bg-dark text-white rounded-4 shadow-sm p-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h5 class="fw-bold text-white mb-1"><i class="bi bi-shield-lock-fill text-warning me-2"></i>Campus Transport Administration</h5>
+            <p class="text-white-50 small mb-0">Authorized personnel can access the administration dashboard to manage routes and student passes.</p>
+        </div>
+        <a asp-controller="BusPass" asp-action="AdminIndex" class="btn btn-warning fw-semibold px-4">
+            <i class="bi bi-gear-fill me-1"></i> Open Admin Portal
+        </a>
+    </div>
+</div>

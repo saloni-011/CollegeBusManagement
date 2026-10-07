@@ -1,0 +1,172 @@
+@model IEnumerable<CollegeBusManagement.Models.BusPass>
+
+@{
+    ViewData["Title"] = "Transport Administration Portal";
+    string currentFilter = ViewBag.CurrentFilter as string ?? "All";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-shield-lock-fill text-primary me-2"></i>Admin Pass Management</h2>
+        <p class="text-muted mb-0">Review student transit applications, allocate route seats, and approve or reject passes.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="AdminIndex" asp-route-statusFilter="All" class="btn btn-sm @(currentFilter == "All" ? "btn-dark" : "btn-outline-dark")">
+            All <span class="badge bg-secondary ms-1">@ViewBag.TotalCount</span>
+        </a>
+        <a asp-action="AdminIndex" asp-route-statusFilter="Pending" class="btn btn-sm @(currentFilter == "Pending" ? "btn-warning" : "btn-outline-warning")">
+            Pending <span class="badge bg-dark ms-1">@ViewBag.PendingCount</span>
+        </a>
+        <a asp-action="AdminIndex" asp-route-statusFilter="Approved" class="btn btn-sm @(currentFilter == "Approved" ? "btn-success" : "btn-outline-success")">
+            Approved <span class="badge bg-light text-dark ms-1">@ViewBag.ApprovedCount</span>
+        </a>
+        <a asp-action="AdminIndex" asp-route-statusFilter="Rejected" class="btn btn-sm @(currentFilter == "Rejected" ? "btn-danger" : "btn-outline-danger")">
+            Rejected <span class="badge bg-light text-dark ms-1">@ViewBag.RejectedCount</span>
+        </a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["WarningMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["WarningMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-x-circle-fill me-2"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col" class="ps-4">Student Info</th>
+                        <th scope="col">Roll Number</th>
+                        <th scope="col">Requested Route</th>
+                        <th scope="col">Request Date</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-end pe-4">Admin Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox display-4 d-block mb-3 text-secondary"></i>
+                                <h5>No Pass Applications Found</h5>
+                                <p>There are currently no pass requests matching this criteria.</p>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var pass in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark">@pass.StudentName</div>
+                                    <div class="text-muted small">
+                                        <i class="bi bi-envelope me-1"></i>@pass.Email &bull; <i class="bi bi-telephone me-1"></i>@pass.ContactNumber
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary-emphasis border px-2 py-1 fs-6">
+                                        @pass.RollNumber
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (pass.BusRoute != null)
+                                    {
+                                        <div class="fw-semibold text-primary">@pass.BusRoute.RouteName</div>
+                                        <small class="text-muted">
+                                            Seats Left: <span class="fw-bold @(pass.BusRoute.AvailableSeats > 0 ? "text-success" : "text-danger")">@pass.BusRoute.AvailableSeats</span> / @pass.BusRoute.TotalSeats
+                                        </small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div>@pass.RequestDate.ToString("dd MMM yyyy")</div>
+                                    <small class="text-muted">@pass.RequestDate.ToString("hh:mm tt")</small>
+                                </td>
+                                <td>
+                                    @if (pass.Status == "Approved")
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Approved
+                                        </span>
+                                        @if (pass.PassExpiryDate.HasValue)
+                                        {
+                                            <div class="small text-muted mt-1">Exp: @pass.PassExpiryDate.Value.ToString("dd MMM yyyy")</div>
+                                        }
+                                    }
+                                    else if (pass.Status == "Rejected")
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">
+                                            <i class="bi bi-x-circle-fill me-1"></i> Rejected
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2">
+                                            <i class="bi bi-hourglass-split me-1"></i> Pending
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-2">
+                                        @if (pass.Status != "Approved")
+                                        {
+                                            <form asp-action="Approve" asp-route-id="@pass.Id" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-success" title="Approve & Allocate Seat">
+                                                    <i class="bi bi-check-lg me-1"></i> Approve
+                                                </button>
+                                            </form>
+                                        }
+
+                                        @if (pass.Status != "Rejected")
+                                        {
+                                            <form asp-action="Reject" asp-route-id="@pass.Id" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Reject Pass Application" onclick="return confirm('Are you sure you want to reject this application?');">
+                                                    <i class="bi bi-x-lg me-1"></i> Reject
+                                                </button>
+                                            </form>
+                                        }
+
+                                        @if (pass.Status == "Approved")
+                                        {
+                                            <a asp-action="Status" asp-route-rollNumber="@pass.RollNumber" target="_blank" class="btn btn-sm btn-outline-primary" title="Preview Digital Pass">
+                                                <i class="bi bi-qr-code"></i> View Pass
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

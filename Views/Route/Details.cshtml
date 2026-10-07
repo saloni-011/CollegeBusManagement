@@ -1,0 +1,119 @@
+@model CollegeBusManagement.Models.BusRoute
+
+@{
+    ViewData["Title"] = $"{Model.RouteName} - Route Details";
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Bus Routes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.RouteName</li>
+        </ol>
+    </nav>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-dark text-white p-4 rounded-top-4">
+                <span class="badge bg-primary mb-2">Route ID #@Model.Id</span>
+                <h4 class="mb-1 text-white">@Model.RouteName</h4>
+                <p class="mb-0 text-white-50 small"><i class="bi bi-arrow-left-right me-1"></i> @Model.StartPoint to @Model.EndPoint</p>
+            </div>
+            <div class="card-body p-4">
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                        <span class="text-muted"><i class="bi bi-geo-alt-fill text-success me-2"></i>Starting Point</span>
+                        <span class="fw-semibold">@Model.StartPoint</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                        <span class="text-muted"><i class="bi bi-flag-fill text-danger me-2"></i>Destination</span>
+                        <span class="fw-semibold">@Model.EndPoint</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                        <span class="text-muted"><i class="bi bi-currency-rupee text-primary me-2"></i>Monthly Fare</span>
+                        <span class="fs-5 fw-bold text-primary">₹@Model.MonthlyFee.ToString("N2")</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                        <span class="text-muted"><i class="bi bi-people-fill text-info me-2"></i>Total Seats</span>
+                        <span class="fw-semibold">@Model.TotalSeats</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                        <span class="text-muted"><i class="bi bi-ticket-detailed text-warning me-2"></i>Available Seats</span>
+                        <span class="badge @(Model.AvailableSeats > 5 ? "bg-success" : Model.AvailableSeats > 0 ? "bg-warning text-dark" : "bg-danger") fs-6">
+                            @Model.AvailableSeats Available
+                        </span>
+                    </li>
+                </ul>
+
+                <div class="d-grid gap-2">
+                    <a asp-controller="BusPass" asp-action="Apply" class="btn btn-primary btn-lg shadow-sm">
+                        <i class="bi bi-ticket-perforated-fill me-1"></i> Apply for Pass on This Route
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Back to All Routes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center rounded-top-4">
+                <div>
+                    <h5 class="fw-bold mb-1"><i class="bi bi-geo-fill text-danger me-2"></i>Scheduled Intermediate Stops</h5>
+                    <p class="text-muted small mb-0">Sequence of pickup locations and estimated morning timings.</p>
+                </div>
+                <a asp-action="AddStop" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Add Stop
+                </a>
+            </div>
+            <div class="card-body p-4">
+                @if (Model.BusStops != null && Model.BusStops.Any())
+                {
+                    <div class="position-relative ps-4 ms-2">
+                        <!-- Vertical line for timeline -->
+                        <div class="position-absolute start-0 top-0 bottom-0 bg-primary bg-opacity-25" style="width: 2px;"></div>
+
+                        @foreach (var (stop, index) in Model.BusStops.Select((s, i) => (s, i + 1)))
+                        {
+                            <div class="position-relative mb-4">
+                                <div class="position-absolute start-0 translate-middle-x rounded-circle bg-white border border-2 border-primary d-flex align-items-center justify-content-center text-primary fw-bold" style="width: 28px; height: 28px; left: -14px; top: 0px; font-size: 0.75rem;">
+                                    @index
+                                </div>
+                                <div class="card border bg-light bg-opacity-50 ms-3 p-3 rounded-3 shadow-none">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="fw-bold mb-0 text-dark">@stop.StopName</h6>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
+                                            <i class="bi bi-clock me-1"></i> @stop.PickupTime
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-pin-map display-5 text-secondary d-block mb-3"></i>
+                        <p class="mb-3">No intermediate stops recorded for this route yet.</p>
+                        <a asp-action="AddStop" asp-route-id="@Model.Id" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-lg me-1"></i> Add First Stop
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
