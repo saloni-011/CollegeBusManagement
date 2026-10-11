@@ -1,0 +1,55 @@
+﻿@model CollegeBusManagement.Models.ViewModels.BusPassApplicationViewModel
+
+@{
+    ViewData["Title"] = "Apply for Bus Pass";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Apply for Bus Pass</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ApplyPass" method="post">
+                        <div class="mb-3">
+                            <label asp-for="SelectedRouteId" class="form-label"></label>
+                            <select asp-for="SelectedRouteId" asp-items="Model.Routes" class="form-select">
+                                <option value="">-- Select Route --</option>
+                            </select>
+                            <span asp-validation-for="SelectedRouteId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SelectedStopId" class="form-label"></label>
+                            <select asp-for="SelectedStopId" asp-items="Model.Stops" class="form-select">
+                                <option value="">-- Select Stop --</option>
+                            </select>
+                            <span asp-validation-for="SelectedStopId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PassType" class="form-label"></label>
+                            <select asp-for="PassType" class="form-select">
+                                <option value="">-- Select Type --</option>
+                                <option value="Monthly">Monthly</option>
+                                <option value="Semester">Semester</option>
+                                <option value="Annual">Annual</option>
+                            </select>
+                            <span asp-validation-for="PassType" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Submit Application</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

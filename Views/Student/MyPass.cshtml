@@ -1,0 +1,55 @@
+﻿@using CollegeBusManagement.Models
+@model IEnumerable<BusPass>
+
+@{
+    ViewData["Title"] = "My Bus Pass";
+}
+
+<div class="container mt-4">
+    <h2>My Bus Pass Applications</h2>
+    <div class="table-responsive mt-3">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Application ID</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>#@item.Id</td>
+                        <td>
+                            @if (item.Status == "Approved")
+                            {
+                                <span class="badge bg-success">Approved</span>
+                            }
+                            else if (item.Status == "Rejected")
+                            {
+                                <span class="badge bg-danger">Rejected</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.Status == "Approved")
+                            {
+                                <button class="btn btn-sm btn-outline-primary" onclick="window.print()">
+                                    <i class="bi bi-printer"></i> Download Pass
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-sm btn-secondary" disabled>Not Available</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
